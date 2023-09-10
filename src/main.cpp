@@ -1,10 +1,8 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include <SPI.h>
-
-#include <MFRC522v2.h>
 
 #include "Pinout.h"
+
+#include "RFID.h"
 
 __attribute__((noreturn)) int main() {
 	pinMode(pin_DBG_LED_1, OUTPUT);
@@ -41,9 +39,19 @@ __attribute__((noreturn)) int main() {
 	Serial.println("# System is powered up, running set-up.");
 
 	/* TODO: Setups once module structure is up. */
+	RFID rfid;
+	digitalWrite(pin_NFC1_RST, HIGH);
+	rfid.init();
 
 	/* Main loop */
 	while (true) {
+		int8_t tagID;
 
+		tagID = rfid.checkTags();
+		if (tagID) {
+			Serial.printf("Check tag result : %d\n", tagID);
+		}
+
+		delay(100);
 	}
 }
