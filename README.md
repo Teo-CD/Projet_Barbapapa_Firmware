@@ -30,6 +30,30 @@ Sur le long terme, le logiciel doit pouvoir permettre de mettre à jour les tags
 changer les associations, potentiellement modifier les fichiers directement,
 se synchroniser avec le firmware et potentiellement le mettre à jour.
 
+# Statut
+
+ - [ ] Contrôle de puissance
+   - [x] Allumage et extinction du régulateur
+   - [x] Contrôle minimal des modules
+   - [ ] Gestion de la batterie
+ - [ ] Contrôle des modules
+   - [x] RFID (base)
+   - [ ] RFID (avancé, écriture des tags)
+   - [ ] LCD (base)
+   - [ ] LCD (animations)
+   - [ ] LCD (UI)
+   - [ ] Audio (sons de figurines)
+   - [ ] Audio (sons d'UI)
+   - [ ] Audio (gain ?)
+ - [ ] Communication avec logiciel
+   - [x] Retour basique des tags
+   - [ ] Communication HID automatique
+   - [ ] Écriture possible des tags
+ - [ ] Bonus - Aucun garantis
+   - [ ] Synchronisation des listes
+   - [ ] Mise à jour des fichiers
+   - [ ] Mise à jour du firmware
+
 # Pré-requis
 
 Le code est relativement spécifique à la carte électronique, peu d'effort sera
