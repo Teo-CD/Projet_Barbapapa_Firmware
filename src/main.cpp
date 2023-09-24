@@ -3,6 +3,7 @@
 #include "Pinout.h"
 
 #include "RFID.h"
+#include "Com.h"
 
 __attribute__((noreturn)) int main() {
 	pinMode(pin_DBG_LED_1, OUTPUT);
@@ -36,7 +37,7 @@ __attribute__((noreturn)) int main() {
 	 */
 
 	Serial.begin(115200);
-	Serial.println("# System is powered up, running set-up.");
+	Com::sendComment("# System is powered up, running set-up.");
 
 	/* TODO: Setups once module structure is up. */
 	RFID rfid;
@@ -45,11 +46,11 @@ __attribute__((noreturn)) int main() {
 
 	/* Main loop */
 	while (true) {
-		int8_t tagID;
+		int8_t tagEvent;
 
-		tagID = rfid.checkTags();
-		if (tagID) {
-			Serial.printf("Check tag result : %d\n", tagID);
+		tagEvent = rfid.checkTags();
+		if (tagEvent) {
+			Com::sendFigUpdate(tagEvent);
 		}
 
 		delay(100);
