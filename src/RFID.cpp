@@ -37,9 +37,9 @@ int8_t RFID::checkTags() {
 //				Serial.printf("UID 0x%lX is gone\n", *(uint32_t *)node->uid.uidByte);
 				// If we don't, assume the tag is gone and remove it from the list.
 				removeActiveTag(node, previousNode);
-				// Return the negative ID to signal it has gone.
+				// Return the ID with the sign bit set to signal it has gone.
 				// If other tags are gone we can check on the next loop.
-				return -node->tag_ID;
+				return node->tag_ID | 1<<7;
 			}
 		}
 	}
