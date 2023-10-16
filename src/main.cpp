@@ -37,7 +37,7 @@ __attribute__((noreturn)) int main() {
 	 */
 
 	Serial.begin(115200);
-	Com::sendComment("# System is powered up, running set-up.");
+	Com::sendComment("System is powered up, running set-up.");
 
 	/* TODO: Setups once module structure is up. */
 	RFID rfid;

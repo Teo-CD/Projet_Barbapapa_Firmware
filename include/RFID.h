@@ -23,7 +23,7 @@
 struct uidNode {
 	MFRC522Constants::Uid uid{};
 	uidNode* next = nullptr;
-	// IDs should be positive integers < 127 as the sign is used for direction.
+	// IDs should be positive integers < 127 as the sign bit is used for direction.
 	int8_t tag_ID = 0;
 };
 
@@ -36,7 +36,7 @@ public:
 	 * at a time, another call would be needed to get eventual concurrent events.
 	 * This updates the respective lists and returns the ID with the direction
 	 * of the change.
-	 * @return 0 if no change, +ID if new tag detected, -ID if the tag left.
+	 * @return 0 if no change, ID if new tag detected, ID & sign bit if the tag left.
 	 */
 	int8_t checkTags();
 private:
