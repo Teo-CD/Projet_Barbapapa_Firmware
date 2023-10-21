@@ -21,6 +21,9 @@ de la carte électronique :
    - Jouer des sons
    - Contrôle du gain
 
+Les données utilisées pour l'affichage sur le LCD ou pour la sortie audio doivent
+être chargés depuis une carte SD insérée dans la carte microcontrôleur.
+
 En plus de contrôler la carte, le firmware doit pouvoir intéragir avec une
 application développée sur Unity.  
 En premier lieu, il doit renvoyer des identifiants correspondants aux tags RFID
@@ -68,6 +71,100 @@ mise à jour et suivi des dépendances.
 
 La structure du code assume une carte Teensy. En particulier, il est conçu pour la
 [Teensy 4.1](https://www.pjrc.com/store/teensy41.html).
+
+# Carte SD et données
+
+La carte SD est utilisée pour lire les animations et les sons, lors de l'utilisation
+des figurines ou pour des cas génériques (démarrage, batterie faible…).  
+Le firmware attend les fichiers dans certains endroits et sous certaines formes,
+détaillés ici.
+
+## Structure de fichiers
+
+Les fichiers sur la carte SD sont structurés comme suit :
+```
+/
+├── RANDONNEE/
+│   ├── ANIM/
+│   │   ├── 00
+│   │   ├── 01
+│   │   ├── 02
+│   │   ├── ..
+│   │   └── XX
+│   └── audio.wav
+├── RESTO/
+│   ├── ANIM/
+│   │   └── ..
+│   └── audio.wav
+├── .../
+└── SYS/
+    ├── ANIM*/
+    ├── ../
+    └── *.wav
+```
+
+Tous les fichiers liés à une figurine en particulier doivent être placés dans un
+dossier associé au nom de la figurine.  
+Les noms attendus sont ceux des tableaux définis dans `src/IDs.cpp`.  
+Les différentes images d'une même animation doivent être dans un même dossier,
+numérotés dans l'ordre avec deux chiffres et sans extension, les fichiers audio
+doivent garder leur extension.
+
+Le dossier SYS sera utilisé pour toute interaction qui n'est pas liée à une figurine.
+
+## Structure des données
+### Audio
+
+Le format audio supporté est assez précis : les fichiers doivent être des WAV
+16 bit PCM, 44100 Hz.  
+Mono ou stéréo n'est pas important : la carte ne supporte qu'un haut-parleur,
+les deux canaux stéréo seront moyennés `(Gauche+Droit)/2`.
+
+### Animations
+
+Le format des animations est d'autant plus précis et particulier et demandera
+probablement du traitement pour qu'elles soient correctes.
+
+Tout d'abord, chaque image de l'animation doit être dans son propre fichier, un
+seul fichier pour l'animation (comme un gif) n'est pas possible.
+
+L'écran LCD choisi est un module pour écran Nokia 5110 de 84x48 pixels monochromes,
+les images de l'animation doivent donc être à ce format et monochromes.  
+L'image attendue est exclusivement une bitmap d'un bit par pixel, sans aucune
+autre information.  
+De plus, il est probable que les bits attendus soient inversés par rapport à ceux
+produits "logiquement" depuis un programme normal. Par exemple `0b11001100` devrait
+en réalité être `0b00110011`.
+
+Je n'ai pas connaissance d'un format connu qui peut être généré depuis un logiciel
+et répondre à ces conditions, cependant il est possible d'y arriver automatiquement
+avec quelques opérations de transformation.  
+Pour la facilité, il est donc possible d'arriver aux fichiers individuels requis
+à partir d'un simple gif aux proportions correctes.
+
+À l'aide d'[ImageMagick](https://imagemagick.org/), on peut découper le gif en
+ses images individuelles, et les convertir en un format de bitmap presque correct
+(aux bits inversés) avec la commande suivante :
+
+```shell
+convert -resize 84x48 -coalesce <animation>.gif -threshold 50% %02d.mono
+```
+
+Il peut être nécessaire d'inverser les bits comme mentionné plus haut et je n'ai
+pas trouvé de façon existante de le faire. 
+Vous trouverez donc dans `Utils/bitmap_helper` un projet Rust qui permet de
+réaliser cette opération sur les fichiers produits par la commande ci-dessus.  
+Une fois compilé, vous pouvez convertir les fichiers `.mono` dans le format adapté
+(avec une extension `.bin` en les passant à l'utilitaire :
+```shell
+bitmap_helper *.mono
+```
+
+N'oubliez pas de retirer l'extension et de les placer dans un dossier `ANIM` sur
+la carte SD, comme décrit ci-dessus.
+
+Un script bash est aussi fourni pour automatiser tout ce processus :
+`Utils/convertAnimGif.sh`.
 
 # Interfaçage avec l'application Unity
 
