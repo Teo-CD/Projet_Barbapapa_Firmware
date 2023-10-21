@@ -3,6 +3,7 @@
 #include "Pinout.h"
 
 #include "Com.h"
+#include "LCD.h"
 #include "RFID.h"
 
 __attribute__((noreturn)) int main() {
@@ -44,15 +45,27 @@ __attribute__((noreturn)) int main() {
 	digitalWrite(pin_NFC1_RST, HIGH);
 	rfid.init();
 
+	if (!SD.begin(BUILTIN_SDCARD))
+		Com::sendComment("Could not use the SD Card.");
+
+	LCD lcd;
+	digitalWrite(pin_LCD_RST, HIGH);
+	lcd.init();
+
 	/* Main loop */
 	while (true) {
 		int8_t tagEvent;
 
+		/* Display first, in case the RFID communication delays it too much. */
+		lcd.checkAndDisplay();
+
 		tagEvent = rfid.checkTags();
 		if (tagEvent) {
 			Com::sendFigUpdate(tagEvent);
+			lcd.startNewAnim(tagEvent);
 		}
 
-		delay(100);
+		/* TODO: Drop delay, WFE+timer interrupt(s) ? */
+		delay(25);
 	}
 }

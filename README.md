@@ -42,8 +42,8 @@ se synchroniser avec le firmware et potentiellement le mettre à jour.
  - [ ] Contrôle des modules
    - [x] RFID (base)
    - [ ] RFID (avancé, écriture des tags)
-   - [ ] LCD (base)
-   - [ ] LCD (animations)
+   - [x] LCD (base)
+   - [x] LCD (animations)
    - [ ] LCD (UI)
    - [ ] Audio (sons de figurines)
    - [ ] Audio (sons d'UI)
