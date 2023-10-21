@@ -2,8 +2,8 @@
 
 #include "Pinout.h"
 
-#include "RFID.h"
 #include "Com.h"
+#include "RFID.h"
 
 __attribute__((noreturn)) int main() {
 	pinMode(pin_DBG_LED_1, OUTPUT);

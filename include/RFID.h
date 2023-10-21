@@ -15,6 +15,7 @@
 #include <MFRC522DriverPinSimple.h>
 #include <MFRC522DriverSPI.h>
 
+#include "IDs.h"
 #include "Pinout.h"
 
 /***

@@ -39,7 +39,7 @@ int8_t RFID::checkTags() {
 				removeActiveTag(node, previousNode);
 				// Return the ID with the sign bit set to signal it has gone.
 				// If other tags are gone we can check on the next loop.
-				return node->tag_ID | 1<<7;
+				return node->tag_ID | idMaskGone;
 			}
 		}
 	}
