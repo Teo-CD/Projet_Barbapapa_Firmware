@@ -11,6 +11,7 @@
 
 #include <Adafruit_PCD8544.h>
 
+#include "Audio.h"
 #include "Com.h"
 #include "IDs.h"
 #include "Pinout.h"

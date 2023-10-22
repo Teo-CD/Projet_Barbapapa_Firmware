@@ -47,14 +47,23 @@ bool LCD::checkAndDisplay() {
 	if (!animDir || millis() - lastFrameTime < frameTarget)
 		return false;
 
+	/*
+	 * Audio playback is controlled by interrupts, so it can happen anytime.
+	 * Prevent a potential conflict when reading a frame of animation from the
+	 * SD card and being interrupted by the audio library, which will try to
+	 * read audio data from the SD card at the same time.
+	 */
+	AudioNoInterrupts();
 	File frame = animDir.openNextFile();
 	if (!frame) {
 		/* There are no frames anymore, the animation is complete. */
 		animDir.close();
+		AudioInterrupts();
 		return false;
 	}
 	frame.read(bitmap, 528);
 	frame.close();
+	AudioInterrupts();
 
 	lcd.clearDisplay();
 	lcd.drawBitmap(0, 0, bitmap, 84, 48, 1);

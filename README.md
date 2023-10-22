@@ -45,7 +45,7 @@ se synchroniser avec le firmware et potentiellement le mettre à jour.
    - [x] LCD (base)
    - [x] LCD (animations)
    - [ ] LCD (UI)
-   - [ ] Audio (sons de figurines)
+   - [x] Audio (sons de figurines)
    - [ ] Audio (sons d'UI)
    - [ ] Audio (gain ?)
  - [ ] Communication avec logiciel
@@ -81,7 +81,7 @@ détaillés ici.
 
 ## Structure de fichiers
 
-Les fichiers sur la carte SD sont structurés comme suit :
+Les fichiers sur la carte SD sont structurés comme suit (**notez les majuscules**) :
 ```
 /
 ├── RANDONNEE/
@@ -91,16 +91,16 @@ Les fichiers sur la carte SD sont structurés comme suit :
 │   │   ├── 02
 │   │   ├── ..
 │   │   └── XX
-│   └── audio.wav
+│   └── ENTRY.WAV
 ├── RESTO/
 │   ├── ANIM/
 │   │   └── ..
-│   └── audio.wav
+│   └── ENTRY.WAV
 ├── .../
 └── SYS/
     ├── ANIM*/
     ├── ../
-    └── *.wav
+    └── *.WAV
 ```
 
 Tous les fichiers liés à une figurine en particulier doivent être placés dans un

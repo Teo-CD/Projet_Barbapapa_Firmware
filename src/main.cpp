@@ -5,6 +5,7 @@
 #include "Com.h"
 #include "LCD.h"
 #include "RFID.h"
+#include "Speaker.h"
 
 __attribute__((noreturn)) int main() {
 	pinMode(pin_DBG_LED_1, OUTPUT);
@@ -40,7 +41,6 @@ __attribute__((noreturn)) int main() {
 	Serial.begin(115200);
 	Com::sendComment("System is powered up, running set-up.");
 
-	/* TODO: Setups once module structure is up. */
 	RFID rfid;
 	digitalWrite(pin_NFC1_RST, HIGH);
 	rfid.init();
@@ -52,17 +52,28 @@ __attribute__((noreturn)) int main() {
 	digitalWrite(pin_LCD_RST, HIGH);
 	lcd.init();
 
+	/* Don't enable the amp here, only do it when playing to save some power. */
+	Speaker::init();
+	Speaker speaker;
+
+	Com::sendComment("All modules initialized, entering main loop.");
+
 	/* Main loop */
 	while (true) {
 		int8_t tagEvent;
 
 		/* Display first, in case the RFID communication delays it too much. */
 		lcd.checkAndDisplay();
+		speaker.checkPlayingAndDisable();
 
 		tagEvent = rfid.checkTags();
 		if (tagEvent) {
+			tagEvent = 4;
 			Com::sendFigUpdate(tagEvent);
+			/* Start the audio first because of the possible WAV parsing delay. */
+			speaker.playNewSound(tagEvent);
 			lcd.startNewAnim(tagEvent);
+
 		}
 
 		/* TODO: Drop delay, WFE+timer interrupt(s) ? */
