@@ -14,7 +14,7 @@
  */
 namespace Com {
 	void sendFigUpdate(int8_t event);
-	void sendComment(const char* message, ...);
+	void sendComment(const char message[62], ...);
 }
 
 #endif //JIN_BARBAPAPA_COM_H

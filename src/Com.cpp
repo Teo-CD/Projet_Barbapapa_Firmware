@@ -28,7 +28,7 @@ namespace Com {
 		flushBuffer();
 	}
 
-	void sendComment(const char *message, ...) {
+	void sendComment(const char message[62], ...) {
 		va_list args;
 		va_start(args, message);
 		buffer[0] = '#';
