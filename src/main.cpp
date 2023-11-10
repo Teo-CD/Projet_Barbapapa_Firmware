@@ -25,8 +25,8 @@ __attribute__((noreturn)) int main() {
 
 	pinMode(pin_BAT_SNS, INPUT);
 	/*
-	 * Voltage divider ratio is 1.5 and analog input has 10 significant bits.
-	 * Which gives us 0-1023 <=> 0V-4.95V, so 650 is a measure of 3.14V.
+	 * Voltage divider ratio is 1.5 and analog input has 10 significant bits,
+	 * which gives us 0-1023 <=> 0V-4.95V, so 650 is a measure of 3.14V.
 	 * This is quite low, but there's a voltage drop because of the diode, and
 	 * we don't want to be at the very end of the battery's charge anyway.
 	 * Let's be conservative.

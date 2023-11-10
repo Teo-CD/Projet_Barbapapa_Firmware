@@ -16,7 +16,7 @@ constexpr char promoDirs[][dirStrSize] = {
 		"OURS",
 		"BAGAR",
 		"INCAPABLE",
-		"MYSTERE"
+		"LOUPGAROU"
 };
 constexpr char charDirs[][dirStrSize] = {
 		"INVALIDE",
