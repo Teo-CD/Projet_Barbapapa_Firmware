@@ -30,7 +30,15 @@ struct uidNode {
 
 class RFID {
 public:
-	RFID() : comData{}, sd(SD) {};
+	/***
+	 * Use the main SPI port and NFC chip select by default, but allow choosing
+	 * an alternate chip select and/or SPI bus if needed to allow multiple
+	 * RFID readers in parallel.
+	 */
+	explicit RFID(const uint8_t chipSelect = pin_NFC1_CS, SPIClass &spiBus = SPI) :
+		driverPin(chipSelect), driverSpi(driverPin, spiBus),
+		mfrc(driverSpi), comData{}, sd(SD) {};
+
 	void init();
 	/***
 	 * Check if any new tags are present or have left. Only one event is reported
@@ -54,9 +62,9 @@ private:
 	uidNode* activeTags = nullptr;
 	uidNode* nextFreeTagSlot = activeTagsArray;
 
-	MFRC522DriverPinSimple driverPin{pin_NFC1_CS};
-	MFRC522DriverSPI driverSpi{driverPin};
-	MFRC522 mfrc{driverSpi};
+	MFRC522DriverPinSimple driverPin;
+	MFRC522DriverSPI driverSpi;
+	MFRC522 mfrc;
 
 	/*
 	 * Array used to read and write blocks to the tags. Blocks are 16 bytes but
