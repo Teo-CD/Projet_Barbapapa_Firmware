@@ -67,6 +67,16 @@ réalisé pour le rendre flexible sur ce point.
 Ce projet utilise [Platformio](https://platformio.org/) pour gérer la compilation,
 mise à jour et suivi des dépendances.
 
+Pour mettre à jour la carte, une fois connectée, vous pouvez lancer la commande suivante :  
+```shell
+platformio run -e prod -t upload
+```
+
+Pour utiliser l'environnement de développement et désactiver la communication HID, utilisez la commande suivante :  
+```shell
+platformio run -e dev -t upload
+```
+
 ## Carte cible
 
 La structure du code assume une carte Teensy. En particulier, il est conçu pour la
