@@ -68,12 +68,13 @@ __attribute__((noreturn)) int main() {
 
 		tagEvent = rfid.checkTags();
 		if (tagEvent) {
-			tagEvent = 4;
 			Com::sendFigUpdate(tagEvent);
-			/* Start the audio first because of the possible WAV parsing delay. */
-			speaker.playNewSound(tagEvent);
-			lcd.startNewAnim(tagEvent);
-
+			/* Currently, we only play effects when placing a new figurine. */
+			if (!isIdGone(tagEvent)) {
+				/* Start the audio first as WAV parsing might delay playback. */
+				speaker.playNewSound(tagEvent);
+				lcd.startNewAnim(tagEvent);
+			}
 		}
 
 		/* TODO: Drop delay, WFE+timer interrupt(s) ? */
