@@ -4,6 +4,9 @@
 
 #include "RFID.h"
 
+static_assert(RFID::maxTags * sizeof(Com::TagInfoRecord) <= 62,
+			  "RFID::maxTags too high, protocol cannot support it.\n");
+
 MFRC522Constants::MIFARE_Key RFID::defaultKey = {0xFF,0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 int RFID::currentActiveTags = 0;
 
@@ -66,6 +69,38 @@ int8_t RFID::checkTags() {
 	// Don' t check the ID, otherwise we cannot program the tag.
 	newTag->tag_ID = comData[0];
 	return newTag->tag_ID;
+}
+
+uint8_t RFID::gatherTagInfo(Com::TagInfoRecord *tagData) {
+	int tagCount = 0;
+	for (uidNode* node = activeTags; node; node = node->next) {
+		// The protocol does not support UIDs other than 4 bytes, so assume it
+		// is the case here directly.
+		tagData[tagCount].uid = *(uint32_t*)(node->uid.uidByte);
+		tagData[tagCount].figId = node->tag_ID;
+		tagCount++;
+	}
+	return tagCount;
+}
+
+bool RFID::programTag(Com::TagInfoRecord *tagToProgram) {
+
+	byte comSize = sizeof(comData);
+
+	mfrc.uid.size = 4;
+	*(uint32_t*)(mfrc.uid.uidByte) = tagToProgram->uid;
+	mfrc.PICC_WakeupA(comData, &comSize);
+	if (mfrc.PICC_Select(&mfrc.uid, mfrc.uid.size) != MFRC522Constants::STATUS_OK) {
+		Serial.println("Failed to wakeup for programming. Is tag still there ?\n");
+		mfrc.PICC_HaltA();
+		return false;
+	}
+
+	if (!writeBlock(mfrc.uid, tagIdBlock, tagToProgram->figId)) {
+		Serial.println("Failed to program tag.");
+		return false;
+	}
+	return true;
 }
 
 uidNode* RFID::addActiveTag(const MFRC522Constants::Uid &newTag) {

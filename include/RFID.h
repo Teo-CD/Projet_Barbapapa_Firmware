@@ -15,6 +15,7 @@
 #include <MFRC522DriverPinSimple.h>
 #include <MFRC522DriverSPI.h>
 
+#include "Com.h"
 #include "IDs.h"
 #include "Pinout.h"
 
@@ -50,6 +51,21 @@ public:
 	 * @return 0 if no change, ID if new tag detected, ID & sign bit if the tag left.
 	 */
 	int8_t checkTags();
+
+	/***
+	 * Populate an already allocated array of sufficient size to fit
+	 * maxTags number of TagInfoRecords.
+	 * @param tagData Pointer to an array of size maxTags*sizeof(Com::TagInfoRecord)
+	 * @return Number of tags actually put in the array.
+	 */
+	uint8_t gatherTagInfo(Com::TagInfoRecord* tagData);
+
+	/***
+	 * Change the ID stored in a tag so that it matches tagToProgram.
+	 * @param tagToProgram Pointer to an existing struct with the data to program.
+	 * @return True if the programming succeeded.
+	 */
+	bool programTag(Com::TagInfoRecord* tagToProgram);
 private:
 	static const byte tagIdBlock = 0x11;
 	/* Used for "encrypted" communication with the tags. */
