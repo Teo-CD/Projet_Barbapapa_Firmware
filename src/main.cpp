@@ -77,6 +77,16 @@ __attribute__((noreturn)) int main() {
 			}
 		}
 
+		Com::ReceivedMessage message = Com::receiveMessage();
+		if (message == Com::TAG_INFO_REQUEST) {
+			uint8_t tagCount = rfid.gatherTagInfo(Com::getTagRecords());
+			Com::sendTagInfo(tagCount);
+		} else if (message == Com::TAG_PROGRAMMING) {
+			if (!rfid.programTag(Com::getTagRecords())) {
+				Com::sendComment("Tag programming failed.");
+			}
+		}
+
 		/* TODO: Drop delay, WFE+timer interrupt(s) ? */
 		delay(25);
 	}
