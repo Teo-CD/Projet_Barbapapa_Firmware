@@ -98,6 +98,16 @@ private:
 	 * @return True if read succeeded, false otherwise.
 	 */
 	bool readBlock(MFRC522Constants::Uid &tagUid, byte blockAddr);
+
+	/**
+	 * Write data to tagUid at blockAddr and return if the write succeeded or not.
+	 * The tag needs to be already woken up.
+	 * @param tagUid Uid of the tag to write to.
+	 * @param blockAddr Address of the block to write to.
+	 * @param data Byte to write.
+	 * @return True if write succeeded, false otherwise.
+	 */
+	bool writeBlock(MFRC522Constants::Uid &tagUid, byte blockAddr, uint8_t data);
 };
 
 #endif //JIN_BARBAPAPA_RFID_H

@@ -116,3 +116,26 @@ bool RFID::readBlock(MFRC522Constants::Uid &uidToRead, byte blockAddr) {
 	mfrc.PICC_HaltA();
 	return status == MFRC522Constants::STATUS_OK;
 }
+
+bool RFID::writeBlock(MFRC522Constants::Uid &uidToRead, byte blockAddr, uint8_t data) {
+	if (mfrc.PCD_Authenticate(
+			MFRC522Constants::PICC_Command::PICC_CMD_MF_AUTH_KEY_A,
+			blockAddr, (&defaultKey),&uidToRead)!= MFRC522Constants::STATUS_OK) {
+		Serial.println("writeBlock: Failed to authenticate");
+		mfrc.PICC_HaltA();
+		return false;
+	}
+
+	byte size = sizeof(comData);
+	for (byte& bufferByte: comData)
+		bufferByte = 0;
+
+	*comData = data;
+
+	MFRC522::StatusCode status = mfrc.MIFARE_Write(blockAddr, comData, size);
+	// Needed otherwise no new communications can happen.
+	mfrc.PCD_StopCrypto1();
+	// No need to keep the tag active.
+	mfrc.PICC_HaltA();
+	return status == MFRC522Constants::STATUS_OK;
+}
