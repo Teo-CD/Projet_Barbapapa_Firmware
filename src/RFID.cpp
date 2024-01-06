@@ -5,6 +5,7 @@
 #include "RFID.h"
 
 MFRC522Constants::MIFARE_Key RFID::defaultKey = {0xFF,0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+int RFID::currentActiveTags = 0;
 
 void RFID::init() {
 	// Create and set up a static linked list to manage active tags.
@@ -58,11 +59,11 @@ int8_t RFID::checkTags() {
 		return 0;
 	}
 	// If the read fails, we cannot use this tag anyway so remove it from the list.
-	if (!readBlock(newTag->uid, 0x11) ) {
+	if (!readBlock(newTag->uid, tagIdBlock) ) {
 		removeActiveTag(newTag, nullptr);
 		return 0;
 	}
-	// TODO: ID check ?
+	// Don' t check the ID, otherwise we cannot program the tag.
 	newTag->tag_ID = comData[0];
 	return newTag->tag_ID;
 }
@@ -101,16 +102,17 @@ bool RFID::readBlock(MFRC522Constants::Uid &uidToRead, byte blockAddr) {
 	if (mfrc.PCD_Authenticate(
 			MFRC522Constants::PICC_Command::PICC_CMD_MF_AUTH_KEY_A,
 			blockAddr, (&defaultKey),&uidToRead)!= MFRC522Constants::STATUS_OK) {
-		Serial.println("Failed to authenticate");
+		Serial.println("readBlock: Failed to authenticate");
+		mfrc.PICC_HaltA();
 		return false;
-	} else {
-		byte size = sizeof(comData);
-		mfrc.MIFARE_Read(blockAddr, comData, &size);
-//		Serial.printf("Read block : 0x%lX\n", *(uint32_t *)comData);
 	}
+
+	byte size = sizeof(comData);
+	MFRC522::StatusCode status = mfrc.MIFARE_Read(blockAddr, comData, &size);
+//	Serial.printf("Read block : 0x%lX\n", *(uint32_t *)comData);
 	// Needed otherwise no new communications can happen.
 	mfrc.PCD_StopCrypto1();
 	// No need to keep the tag active.
 	mfrc.PICC_HaltA();
-	return true;
+	return status == MFRC522Constants::STATUS_OK;
 }

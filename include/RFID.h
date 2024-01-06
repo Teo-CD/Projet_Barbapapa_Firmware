@@ -30,6 +30,8 @@ struct uidNode {
 
 class RFID {
 public:
+	static constexpr int maxTags = 2;
+
 	/***
 	 * Use the main SPI port and NFC chip select by default, but allow choosing
 	 * an alternate chip select and/or SPI bus if needed to allow multiple
@@ -49,10 +51,10 @@ public:
 	 */
 	int8_t checkTags();
 private:
+	static const byte tagIdBlock = 0x11;
 	/* Used for "encrypted" communication with the tags. */
 	static MFRC522Constants::MIFARE_Key defaultKey;
-	static constexpr int maxTags = 2;
-	int currentActiveTags = 0;
+	static int currentActiveTags;
 
 	/*
 	 * The linked list tracking active tags.
@@ -90,6 +92,7 @@ private:
 	/**
 	 * Read block at blockADdr from tagUid and return if the read succeeded or not.
 	 * The read block will be in comData.
+	 * The tag needs to be already woken up.
 	 * @param tagUid Uid of the tag to be read.
 	 * @param blockAddr Address of the block to be read.
 	 * @return True if read succeeded, false otherwise.
