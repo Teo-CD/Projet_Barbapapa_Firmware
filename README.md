@@ -216,6 +216,61 @@ Octet 1
 `D`: bit 7, 1 si enlevé, 0 sinon  
 `C`: bit 6, 1 si personnage, 0 si année
 
+### Requête d'information pour la programmation de tag
+
+**En-tête**      : `?`  
+**Longueur**     : 0 octets  
+**Description**  : Message **vide** envoyé du logiciel vers l'objet pour
+demander les informations complètes qui permettront de programmer les tags.  
+Il attend une réponse de l'objet, décrit dans la catégorie suivante.
+
+### Réponse d'information pour la programmation de tag
+
+**En-tête**      : `!`  
+**Longueur**     : 1 + 5*n octets, n le nombre de figurines présentes (>=0)  
+**Description**  : Message de réponse à la requête d'information pour la programmation
+des tags.  
+Le premier octet est fixé et indique le nombre de figurines présentes, et donc
+le nombre d'entrées dans le message.
+Ensuite, chaque entrée est constituée de l'ID actuel, sur un octet, puis de l'UID
+du tag, sur quatre octets.  
+C'est l'UID qui est utilisé dans la demande de programmation pour sélectionner le tag.
+
+#### Schéma
+
+```
+   │Optional, N records
+ ┌─┼────┬──┬────┬──┐
+ │N│UID1│I1│UID2│I2│...
+ └─┴────┴──┴────┴──┘
+ 0 1    5  6    10 11 - Octets
+```
+`N`    : Nombre de tags présents, 1 octet  
+`UIDn` : UID du tag n, 4 octets  
+`In`   : ID du tag n, 1 octet  
+
+### Message de programmation de tag
+
+**En-tête**      : `=`  
+**Longueur**     : 5 octets  
+**Description**  : Message envoyé par le logiciel à l'objet, permet de changer
+(programmer) l'ID stocké dans un tag.  
+Le contenu est formaté de façon similaire à la réponse d'information :
+l'UID du tag à programmer, sur quatre octets, puis le nouvel identifiant du tag,
+sur un octet.  
+On ne programme qu'un tag à la fois.
+
+#### Schéma
+
+```
+ ┌─────┬────┐
+ │ UID │ ID │
+ └─────┴────┘
+ 0     4    5 - Octets
+```
+`UID` : UID du tag à programmer, 4 octets  
+`ID`  : Nouvel ID à programmer, 1 octet  
+
 ### Message informatif
 
 **En-tête**      : `#`  
